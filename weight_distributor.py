@@ -11,12 +11,16 @@ def distribute_weights(prompt, prompt_seed):
         if len(seed_parts) == 2 and seed_parts[1].startswith('(') and seed_parts[1].endswith(')'):
             word = seed_parts[0]
             weight = seed_parts[1][1:-1]
-            prompt = prompt.replace(word, f"{word}:{weight}")
+            prompt = prompt.replace(word, f"({word}:{weight})")
+        elif seed.startswith('(') and seed.endswith(')'):
+            seed = seed[1:-1]
+            prompt = prompt.replace(seed.split(':')[0], seed)
     return prompt
 
 
 @app.post("/weight-me")
 def weight_me(request_data: dict):
+    print(request_data)
     if request_data is None or "prompt" not in request_data or "prompt_seed" not in request_data:
         raise HTTPException(status_code=400, detail="Invalid request format")
 
